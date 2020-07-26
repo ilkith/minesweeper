@@ -1,0 +1,153 @@
+:root {
+    --background-color: #161616;
+    --bck-contrast: #111111;
+    --contrast-primary: #ABABAB;
+    --transparent: #00000000;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--contrast-primary);
+
+    margin: 0;
+    font-family: 'Recursive', sans-serif;
+}
+
+#menu {
+    float: left;
+    position: relative;
+    top : 0;
+    left: 0;
+
+    width : max-content;
+    height: 98.3vh;
+
+    border-right: 1px solid var(--contrast-primary);
+
+    padding-top  : 1em;
+    padding-left : 1em;
+    padding-right: 1em;
+}
+
+.input-num {
+    margin-bottom: 1em;
+
+    border-color: var(--transparent);
+    border-radius: 15px;
+    border-bottom: 1px solid var(--contrast-primary);
+
+    padding: .3em;
+
+    background-color: var(--transparent);
+
+    color: var(--contrast-primary);
+
+    display: inline-block;
+}
+
+.input-num:hover {
+    background-color: var(--bck-contrast);
+}
+
+.input-num:focus {
+    background-color: var(--bck-contrast);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+*:focus {
+    outline: none;
+}
+
+.top-bar {
+    position: relative;
+    padding: 2em;
+    padding-bottom: 0;
+    display: flow-root;
+
+    text-align: start;
+}
+
+.field {
+    position: relative;
+    padding: 2em;
+    padding-top: 1em;
+}
+
+.field-cell {
+    font-size: 2em;
+    text-align: center;
+    vertical-align: middle;
+
+    width : 50px; 
+    height: 50px; 
+}
+
+.field-cell:hover {
+    box-shadow: inset 0 0 0 1000px #5a5a5a22;
+}
+
+.neighboring-cell {
+    box-shadow: inset 0 0 0 1000px #5a5a5a22 !important;
+}
+
+.hidden-cell {
+    background-color: #101010;
+}
+
+.clicked-cell {
+    color: var(--background-color)
+}
+
+.bomb-cell {
+    background-color: #bb2424;
+}
+
+.flagged-cell {
+    background-image: url("flag.png");
+    background-repeat:no-repeat;
+    background-size:contain;
+    box-shadow:inset 0 0 0 2000px #11111171;
+}
+
+.b-1 {
+    color: #1c5a1f;
+}
+
+.b-2 {
+    color: #138f4d;
+}
+
+.b-3 {
+    color: #5a1c24;
+}
+
+.b-4 {
+    color: #411c5a;
+}
+
+.b-5 {
+    color: #5a1c40;
+}
+
+.b-6 {
+    color: #5a1c1f;
+}
+
+.b-7 {
+    color: #5a3d1c;
+}
+
+.button {
+    background-color: var(--bck-contrast);
+    color: var(--contrast-primary);
+    margin-left: 1em;
+}
