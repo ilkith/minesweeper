@@ -1,6 +1,6 @@
 :root {
-    --background-color: #161616;
-    --bck-contrast: #111111;
+    --background-color: #101010;
+    --bck-contrast: #080808;
     --contrast-primary: #ABABAB;
     --transparent: #00000000;
 }
@@ -100,7 +100,8 @@ input[type=number] {
 }
 
 .hidden-cell {
-    background-color: #101010;
+    background-color: #151515;
+    border: 1px solid black;
 }
 
 .clicked-cell {
@@ -108,7 +109,8 @@ input[type=number] {
 }
 
 .bomb-cell {
-    background-color: #bb2424;
+    background-color: #8c1b1b;
+    border: 1px solid black;
 }
 
 .flagged-cell {
