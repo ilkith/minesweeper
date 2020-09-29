@@ -77,7 +77,7 @@ function generate_bomb(pos) {
 
             cells[r][c].state = CellState.HIDDEN;
 
-            cells[r][c].onclick = function () {
+            cells[r][c].onclick = function (dontHighlightNeighbors) {
                 if (this.state === CellState.FLAGGED) {
                     this.classList.remove("flagged-cell");
                     
@@ -97,8 +97,8 @@ function generate_bomb(pos) {
                 this.classList.add(css);
 
                 if (!this.isBomb) {
-                    this.innerHTML = this.bombCount || "";
-                    this.classList.add(`b-${this.bombCount}`)
+                    this.innerHTML = this.bombText || this.bombCount || "";
+                    this.classList.add(`b-${this.bombText ? Number(this.bombText[0]) : this.bombCount}`)
                 }
                 else {
                     cells.forEach(r => {
@@ -109,13 +109,14 @@ function generate_bomb(pos) {
                             c.classList.add(css);
 
                             if (!c.isBomb) {
-                                c.classList.add(`b-${c.bombCount}`)
-                                c.innerHTML = c.bombCount || ""
+                                c.classList.add(`b-${c.bombText ? Number(c.bombText[0]) : c.bombCount}`)
+                                c.innerHTML = c.bombText || c.bombCount || ""
                             }
 
                             c.state = CellState.CLICKED;
 
                             c.onclick = function() {}
+                            c.ondblclick = function() {}
                             c.oncontextmenu = () => false
                         })
                     })
@@ -124,29 +125,59 @@ function generate_bomb(pos) {
                 if (this.bombCount === 0)
                     this.neighbors.forEach(n => n.propagate([this.pos]))
 
-                cells[r][c].neighbors.forEach(n => n.classList.add("neighboring-cell"))
+                if (!dontHighlightNeighbors)
+                    cells[r][c].neighbors.forEach(n => n.classList.add("neighboring-cell"))
+                
+                const hidden_neigh = this.neighbors.filter(x => x.state === CellState.HIDDEN)
+                const flagged = this.neighbors.filter(x => x.state === CellState.FLAGGED)
+                if (this.bombCount === hidden_neigh.length + flagged.length && flagged.length < this.bombCount) {
+                    hidden_neigh.forEach(n => n.oncontextmenu())
+                }
+            }
+
+            cells[r][c].ondblclick = function () {
+                let nbc = 0
+                let tbc = 0
+                this.neighbors.forEach(n => nbc += (n.state === CellState.FLAGGED ? 1 : 0))
+                this.neighbors.forEach(n => tbc += (n.isBomb ? 1 : 0))
+
+                if (nbc === tbc)
+                    this.neighbors.forEach(n => { if(n.state !== CellState.FLAGGED && n.state !== CellState.CLICKED)n.onclick(true) })
+                
+                if (this.bombText && Number(this.bombText[0]) === nbc)
+                    this.neighbors.forEach(n => { if(n.state !== CellState.FLAGGED && n.state !== CellState.CLICKED)n.onclick(true) })
             }
 
             cells[r][c].oncontextmenu = function () {
                 if (this.state === CellState.CLICKED)
                     return false;
+                
+                if (this.state === CellState.FLAGGED) {
+                    this.classList.remove("flagged-cell");
+                    
+                    this.state = CellState.HIDDEN;
+                    bombCount++;
+                    bombCountText.innerHTML = bombCount;
+                    return false;
+                }
 
                 this.state = CellState.FLAGGED;
                 bombCount--;
                 bombCountText.innerHTML = bombCount;
 
                 this.classList.add("flagged-cell");
+
                 return false;
             }
 
             cells[r][c].propagate = function(pos) {
                 this.classList.remove("hidden-cell");
                 this.classList.add("clicked-cell");
-                this.classList.add(`b-${this.bombCount}`)
+                this.classList.add(`b-${(this.bombText && this.bombText[0]) || this.bombCount}`)
                 this.state = CellState.CLICKED;
 
                 if (!this.isBomb)
-                    this.innerHTML = this.bombCount || "";
+                    this.innerHTML = this.bombText || this.bombCount || "";
 
                 if (this.bombCount === 0)
                     this.neighbors.forEach(n => {
@@ -158,7 +189,20 @@ function generate_bomb(pos) {
                             n.propagate(pos)
                         }
                     })
+                
+                const hidden_neigh = this.neighbors.filter(x => x.state === CellState.HIDDEN)
+                const flagged = this.neighbors.filter(x => x.state === CellState.FLAGGED)
+                if (this.bombCount === hidden_neigh.length + flagged.length && flagged.length < this.bombCount) {
+                    hidden_neigh.forEach(n => n.oncontextmenu())
+                    
+                }
+            }
 
+            cells[r][c].autocheckbombs = () => {
+                const hidden_neigh = this.neighbors.filter(x => x.state === CellState.HIDDEN)
+                const flagged = this.neighbors.filter(x => x.state === CellState.FLAGGED)
+                if (this.bombCount === hidden_neigh.length && flagged.length < this.bombCount)
+                    hidden_neigh.forEach(n => n.oncontextmenu())
             }
 
             cells[r][c].onmouseover = function () {
@@ -200,6 +244,9 @@ function generate_bomb(pos) {
                     cells[r][c].neighbors.push(cells[cr][cc]);
                 }
             }
+
+            if (cells[r][c].bombCount > 0 && Math.random() < .15)
+                cells[r][c].bombText = `${(Math.random() < .3 ? cells[r][c].bombCount : Math.random() < .3 ? clamp_17(cells[r][c].bombCount+1) : clamp_17(cells[r][c].bombCount-1) )}?`
         }
     }
     
@@ -209,4 +256,8 @@ function generate_bomb(pos) {
 
 function clamp_in_size(n, mx) {
     return n < 0 ? 0 : n > mx ? mx : n;
+}
+
+function clamp_17(n) {
+    return n <= 0 ? 1 : n >= 8 ? 7 : n
 }
